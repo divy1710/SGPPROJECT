@@ -1,25 +1,34 @@
 import express from 'express';
-import dotenv from "dotenv"
+import dotenv from "dotenv";
 import connectDB from './db.js';
-import cors from "cors"
-import userroute from "./routes/userroute.js"
-import questionroute from "./routes/questionRoutes.js"
+import cors from "cors";
+import userroute from "./routes/userroute.js";
+import questionroute from "./routes/questionRoutes.js";
 import cookieParser from 'cookie-parser';
+import path from "path";
+import { fileURLToPath } from "url";
 
-dotenv.config({})
+dotenv.config();
+
+// Fix __dirname in ES Modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
-app.use(express.json())
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors())
+app.use(cors());
 app.use(cookieParser());
 
-app.use('/api/v1/user',userroute)
-app.use('/api/v1/question',questionroute)
+// Serve static files (uploads)
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-const PORT = process.env.PORT || 8000
+app.use('/api/v1/user', userroute);
+app.use('/api/v1/question', questionroute);
 
-app.listen(PORT,()=>{
-    connectDB()
+const PORT = process.env.PORT || 8000;
+
+app.listen(PORT, () => {
+    connectDB();
     console.log(`Server is running on port : ${PORT}`);
-})
+});

@@ -33,6 +33,15 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  semester: {
+    type: Number,
+    validate: {
+      validator: function (value) {
+        return this.role !== "Student" || (this.role === "Student" && value !== undefined);
+      },
+      message: "Semester is required for students."
+    }
+  },
   profile: {
     profilePicture: { 
       type: String, 

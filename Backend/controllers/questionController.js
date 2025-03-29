@@ -5,7 +5,7 @@ import {User} from "../models/User.js";
 
 export const askQuestion = async (req, res) => {
     try {
-        const { studentId, facultyId, subject, questionText } = req.body;
+        const { studentId, facultyId, subject, questionTitle, questionText } = req.body;
 
         // Check if student exists
         const student = await User.findById(studentId);
@@ -19,23 +19,36 @@ export const askQuestion = async (req, res) => {
             return res.status(400).json({ message: "❌ Invalid faculty ID" });
         }
 
+        
+        
+        // Check if file was uploaded
+        let questionFile = null;
+        if (req.file) {
+            questionFile = {
+                public_id: req.file.filename, // Unique filename
+                url: `/uploads/${req.file.filename}` // Relative path to access
+            };
+        }
+        
         // Create a new question
         const newQuestion = new Question({
             studentId,
             facultyId,
             subject,
-            questionText
+            questionTitle,
+            questionText,
+            questionFile // ✅ Store the correct file object
         });
-
+        
         await newQuestion.save();
-
-        // Add question to student's "questionsAsked" array
+        
+        // Add question to student and faculty
         student.questionsAsked.push(newQuestion._id);
         await student.save();
-
-        // Add question to faculty's "questionsAnswered" array since they are assigned to answer it
+        
         faculty.questionsAsked.push(newQuestion._id);
         await faculty.save();
+
 
         res.status(201).json({
             message: "✅ Question submitted successfully",
@@ -49,6 +62,11 @@ export const askQuestion = async (req, res) => {
         });
     }
 };
+
+
+
+
+
 
 export const answerQuestion = async (req, res) => {
     try {
@@ -67,23 +85,30 @@ export const answerQuestion = async (req, res) => {
             return res.status(403).json({ message: "❌ Unauthorized: This question is not assigned to you" });
         }
 
-        // Update question with answer
+        // Update question with answer and mark it as "Answered"
         question.answerText = answerText;
-        question.answered = true;
+        question.status = "Answered"; // ✅ Update status from "Pending" to "Answered"
         await question.save();
 
-        // Add question to faculty's "questionsAnswered" array
+        // Fetch faculty and student details
         const faculty = await User.findById(facultyId);
+        const student = await User.findById(question.studentId);
+
+        // ✅ Only update arrays if user exists
         if (faculty) {
-            faculty.questionsAnswered.push(question._id);
-            await faculty.save();
+            if (!faculty.questionsAnswered) faculty.questionsAnswered = []; // Prevent undefined array
+            if (!faculty.questionsAnswered.includes(question._id)) {
+                faculty.questionsAnswered.push(question._id);
+                await faculty.save();
+            }
         }
 
-        // Add answered question to student's "questionsAnswered" array
-        const student = await User.findById(question.studentId);
         if (student) {
-            student.questionsAnswered.push(question._id);
-            await student.save();
+            if (!student.questionsAnswered) student.questionsAnswered = []; // Prevent undefined array
+            if (!student.questionsAnswered.includes(question._id)) {
+                student.questionsAnswered.push(question._id);
+                await student.save();
+            }
         }
 
         res.status(200).json({
@@ -98,6 +123,7 @@ export const answerQuestion = async (req, res) => {
         });
     }
 };
+
 
 export const getAllQuestions = async (req, res) => {
     try {
