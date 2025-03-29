@@ -13,7 +13,7 @@ export const registerStudent = async (req, res) => {
   try {
     
     // console.log("divy");
-    const { fullname, email, password, department, phoneNumber } = req.body;
+    const { fullname, email, password, department,semester, phoneNumber } = req.body;
 
     // console.log(fullname, email, password, department, phoneNumber)
 
@@ -27,6 +27,7 @@ export const registerStudent = async (req, res) => {
       fullname,
       email,
       password: hashedPassword,
+      semester,
       role: "Student", // Default role for signup
       department,
       phoneNumber

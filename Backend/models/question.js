@@ -15,9 +15,18 @@ const questionSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  
+  questionTitle: {
+    type: String,
+    required: true
+  },
   questionText: {
     type: String,
     required: true
+  },
+  questionFile: { 
+    public_id: { type: String }, // Cloudinary or storage reference
+    url: { type: String } // File URL (image or document)
   },
   answerText: {
     type: String,
