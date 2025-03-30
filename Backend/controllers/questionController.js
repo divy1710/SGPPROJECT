@@ -153,17 +153,24 @@ export const getQuestionById = async (req, res) => {
 export const getQuestionsByStudent = async (req, res) => {
     try {
         const { studentId } = req.params;
-        const questions = await Question.find({ studentId });
 
-        if (questions.length === 0) {
+        // ✅ Fetch questions & correctly populate faculty details
+        const questions = await Question.find({ studentId })
+            .populate("facultyId", "fullname") // ✅ Use the correct field name
+            .lean(); // ✅ Optimize for read-only data
+
+        if (!questions.length) {
             return res.status(404).json({ message: "No questions found for this student" });
         }
 
         res.status(200).json(questions);
     } catch (error) {
+        console.error("Error fetching questions:", error);
         res.status(500).json({ message: "Server Error", error: error.message });
     }
 };
+
+
 
 
 export const getQuestionsByFaculty = async (req, res) => {
