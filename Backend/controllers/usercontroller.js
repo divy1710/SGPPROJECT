@@ -34,7 +34,7 @@ export const registerStudent = async (req, res) => {
     });
 
     await newStudent.save();
-    res.status(201).json({ message: "Student registered successfully!" });
+    res.status(201).json({ message: "Student registered successfully!",success:true });
   } catch (error) {
     res.status(500).json({ message: "Error registering student", error });
   }
@@ -106,6 +106,20 @@ export const loginUser = async (req, res) => {
     res.status(500).json({ message: "Error logging in", error: error.message });
   }
 };
+
+export const logoutUser = async (req, res) => {
+  try {
+    res.clearCookie("token", {
+      httpOnly: true,
+      sameSite: "strict",
+    });
+
+    res.status(200).json({ message: "Logout successful!" });
+  } catch (error) {
+    res.status(500).json({ message: "Error logging out", error: error.message });
+  }
+};
+
 
 // Get User Profile
 export const getUserProfile = async (req, res) => {
