@@ -3,27 +3,31 @@ import { createBrowserRouter } from 'react-router-dom'
 import { Login } from './components/auth/login'
 import { Signup } from './components/auth/signup'
 import { RouterProvider } from 'react-router'
-import  Home  from './components/pages/Home'
+import Home from './components/pages/Home'
 import { SolvedQuestion } from './components/pages/SolvedQuestion'
-import { UnSolvedQuestions } from './components/pages/UnSlovedQuestions'
-import { AllQuestions} from './components/pages/AllQustions'
+import { UnSolvedQuestions } from './components/pages/UnSolvedQuestions'
+import { AllQuestions } from './components/pages/AllQustions'
+import { Footer } from "./components/pages/Footer"
+import { Toaster } from 'sonner'
 
+// Remove the AppContent component and simplify the router structure
 const appRouter = createBrowserRouter([
-  { path: "/" , element: <Home/>},
-  { path: "/login" , element: <Login/>},
-  { path: "/signup" , element: <Signup/>},
-  { path: "/solvedquestions" , element: <SolvedQuestion/>},
-  { path: "/unsolvedquestions" , element: <UnSolvedQuestions/>},
-  { path: "/allquestions" , element: <AllQuestions/>},
-  // { path: "/" , element: <Signup/>},
+  {
+    path: "/",
+    element: <Home />
+  },
+  { path: "/login", element: <Login /> },
+  { path: "/signup", element: <Signup /> },
+  { path: "/solvedquestions", element: <SolvedQuestion /> },
+  { path: "/unsolvedquestions", element: <UnSolvedQuestions /> },
+  { path: "/allquestions", element: <AllQuestions /> },
 ])
 
 export function App() {
-
   return (
     <>
-    {/* <h1>hrloo</h1> */}
+      <Toaster position="top-right" richColors />
       <RouterProvider router={appRouter} />
     </>
-  )
+  );
 }

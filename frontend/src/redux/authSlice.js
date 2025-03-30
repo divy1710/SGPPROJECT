@@ -5,7 +5,7 @@ const authSlice = createSlice({
   initialState: {
     loading: false,
     user: null,
-    questions: [], // ✅ This will store fetched questions
+    questions: [], // ✅ Stores fetched questions
   },
   reducers: {
     setLoading: (state, action) => {
@@ -17,8 +17,13 @@ const authSlice = createSlice({
     setQuestions: (state, action) => {
       state.questions = action.payload; // ✅ Update state with fetched questions
     },
+    logout: (state) => {
+      state.user = null; // ✅ Clear user data
+      state.questions = []; // ✅ Clear questions on logout
+      state.loading = false; // ✅ Reset loading state
+    },
   },
 });
 
-export const { setLoading, setUser, setQuestions } = authSlice.actions;
+export const { setLoading, setUser, setQuestions, logout } = authSlice.actions;
 export default authSlice.reducer;
