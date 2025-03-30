@@ -1,7 +1,9 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { User } from "../models/User.js";
+import { User } from "../models/user.js";
 import dotenv from "dotenv"
+import getDataUri from "../utils/datauri.js";
+import cloudinary from "../utils/cloudinary.js";
 
 dotenv.config({})
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -11,9 +13,9 @@ const JWT_SECRET = process.env.JWT_SECRET;
 // Student Signup
 export const registerStudent = async (req, res) => {
   try {
-    
+
     // console.log("divy");
-    const { fullname, email, password, department,semester, phoneNumber } = req.body;
+    const { fullname, email, password, department, semester, phoneNumber } = req.body;
 
     // console.log(fullname, email, password, department, phoneNumber)
 
@@ -34,7 +36,7 @@ export const registerStudent = async (req, res) => {
     });
 
     await newStudent.save();
-    res.status(201).json({ message: "Student registered successfully!",success:true });
+    res.status(201).json({ message: "Student registered successfully!", success: true });
   } catch (error) {
     res.status(500).json({ message: "Error registering student", error });
   }
@@ -124,15 +126,65 @@ export const logoutUser = async (req, res) => {
 
 
 
-// Get User Profile
-export const getUserProfile = async (req, res) => {
+
+export const updateProfile = async (req, res) => {
   try {
-    const userId = req.params.id;
-    const user = await User.findById(userId).select("-password");
+    const { fullname, phoneNumber, semester, department } = req.body;
+    const userId = req.params.id; // Get user ID from URL
+    const file = req.file; // Fix: Use req.file (not req.files)
+
+    // Find the user
+    let user = await User.findById(userId);
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    res.status(200).json(user);
+    // Handle Profile Picture Upload
+    if (file) {
+      // Convert file buffer to data URI
+      const fileUri = getDataUri(file);
+
+      // Upload new profile picture to Cloudinary
+      const uploadResult = await cloudinary.uploader.upload(fileUri.content, {
+        folder: "profile_pictures",
+      });
+
+      // Delete old profile picture from Cloudinary if it exists
+      if (user.profile.profilePicture?.public_id) {
+        await cloudinary.uploader.destroy(user.profile.profilePicture.public_id);
+      }
+
+      // Update user's profile picture
+      user.profile.profilePicture = {
+        url: uploadResult.secure_url,
+        public_id: uploadResult.public_id,
+      };
+    }
+
+    // Update other profile details
+    if (fullname) user.fullname = fullname;
+    if (phoneNumber) user.phoneNumber = phoneNumber;
+    if (department) user.department = department;
+    if (semester !== undefined && user.role === "Student") {
+      user.semester = semester;
+    }
+
+    // Save updated user details
+    await user.save();
+
+    // Format response (remove sensitive data)
+    const updatedUser = {
+      _id: user._id,
+      fullname: user.fullname,
+      email: user.email,
+      profile: user.profile,
+      phoneNumber: user.phoneNumber,
+      department: user.department,
+      role: user.role,
+    };
+
+    res.status(200).json({ message: "Profile updated successfully", user: updatedUser });
   } catch (error) {
-    res.status(500).json({ message: "Error fetching profile", error });
+    console.error("Profile update error:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
+

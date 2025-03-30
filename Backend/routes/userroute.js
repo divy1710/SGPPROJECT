@@ -1,7 +1,8 @@
 import express from "express";
-import { registerStudent, addFaculty, loginUser, getUserProfile, logoutUser } from "../controllers/usercontroller.js";
+import { registerStudent, addFaculty, loginUser, logoutUser, updateProfile } from "../controllers/usercontroller.js";
 import { authMiddleware } from "../middlewares/authMiddleware.js";
 import { adminMiddleware } from "../middlewares/adminMiddleware.js";
+import { singleUpload } from "../middlewares/multer.js";
 
 const router = express.Router();
 
@@ -18,6 +19,6 @@ router.route("/login").post(loginUser);
 router.route("/logout").get(logoutUser);
 
 // Get User Profile
-router.route("/profile/:id").get(authMiddleware, getUserProfile);
+router.route("/profile/:id").put(authMiddleware,singleUpload, updateProfile);
 
 export default router;

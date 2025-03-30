@@ -35,6 +35,9 @@ const userSchema = new mongoose.Schema({
   },
   semester: {
     type: Number,
+    required: function () {
+      return this.role === "Student";
+    },
     validate: {
       validator: function (value) {
         return this.role !== "Student" || (this.role === "Student" && value !== undefined);
@@ -43,20 +46,24 @@ const userSchema = new mongoose.Schema({
     }
   },
   profile: {
-    profilePicture: { 
-      type: String, 
-      default: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRrwcRgFA-KFW6u0wScyvZEBWMLME5WkdeCUg&s" 
+    profilePicture: {
+      url: {
+        type: String,
+        default: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRrwcRgFA-KFW6u0wScyvZEBWMLME5WkdeCUg&s"
+      },
+      public_id: { type: String } // Added public_id for Cloudinary images
     },
     coverPhoto: {
-      public_id: { type: String },
-      url: { 
-        type: String, 
-        default: "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&w=2070&q=80"
-      }
+      url: {
+        type: String,
+        default: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRgXtZjBEssgCQ86M7tMn2oHbIdEYc5CbIZKQ&s"
+      },
+      public_id: { type: String }
     }
   },
   questionsAsked: [{ type: mongoose.Schema.Types.ObjectId, ref: "Question" }], // For students
   questionsAnswered: [{ type: mongoose.Schema.Types.ObjectId, ref: "Question" }], // For faculty
 }, { timestamps: true });
 
-export const User = mongoose.model("User", userSchema);
+// ✅ Prevent Overwrite Error
+export const User = mongoose.models.User || mongoose.model("User", userSchema);

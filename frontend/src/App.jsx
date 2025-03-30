@@ -9,6 +9,8 @@ import { UnSolvedQuestions } from './components/pages/UnSolvedQuestions'
 import { AllQuestions } from './components/pages/AllQustions'
 import { Footer } from "./components/pages/Footer"
 import { Toaster } from 'sonner'
+import Profile from './components/profilePages/Profile'
+import EditProfile from './components/profilePages/EditProfile'
 
 // Remove the AppContent component and simplify the router structure
 const appRouter = createBrowserRouter([
@@ -21,6 +23,8 @@ const appRouter = createBrowserRouter([
   { path: "/solvedquestions", element: <SolvedQuestion /> },
   { path: "/unsolvedquestions", element: <UnSolvedQuestions /> },
   { path: "/allquestions", element: <AllQuestions /> },
+  { path: "/profile", element: <Profile /> },
+  { path: "/edit/profile", element: <EditProfile /> },
 ])
 
 export function App() {
