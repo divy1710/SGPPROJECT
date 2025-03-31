@@ -1,54 +1,54 @@
 // import Question from "../models/question.js"
 import { Question } from "../models/question.js"; 
-import {User} from "../models/User.js";
+import {User} from "../models/user.js";
 
 
 export const askQuestion = async (req, res) => {
     try {
+        // console.log("Received Data:", req.body); // Debugging line
+
         const { studentId, facultyId, subject, questionTitle, questionText } = req.body;
 
-        // Check if student exists
+        if (!studentId || !facultyId || !subject || !questionTitle || !questionText) {
+            return res.status(400).json({ message: "❌ Missing required fields" });
+        }
+
+        // Validate Student
         const student = await User.findById(studentId);
         if (!student || student.role !== "Student") {
             return res.status(400).json({ message: "❌ Invalid student ID" });
         }
 
-        // Check if faculty exists
+        // Validate Faculty
         const faculty = await User.findById(facultyId);
         if (!faculty || faculty.role !== "Faculty") {
             return res.status(400).json({ message: "❌ Invalid faculty ID" });
         }
 
-        
-        
-        // Check if file was uploaded
         let questionFile = null;
         if (req.file) {
             questionFile = {
-                public_id: req.file.filename, // Unique filename
-                url: `/uploads/${req.file.filename}` // Relative path to access
+                public_id: req.file.filename,
+                url: `/uploads/${req.file.filename}`
             };
         }
-        
-        // Create a new question
+
         const newQuestion = new Question({
             studentId,
             facultyId,
             subject,
             questionTitle,
             questionText,
-            questionFile // ✅ Store the correct file object
+            questionFile
         });
-        
+
         await newQuestion.save();
-        
-        // Add question to student and faculty
+
         student.questionsAsked.push(newQuestion._id);
         await student.save();
-        
+
         faculty.questionsAsked.push(newQuestion._id);
         await faculty.save();
-
 
         res.status(201).json({
             message: "✅ Question submitted successfully",
@@ -56,6 +56,7 @@ export const askQuestion = async (req, res) => {
         });
 
     } catch (error) {
+        console.error("❌ Server Error:", error);
         res.status(500).json({
             message: "❌ Server Error",
             error: error.message

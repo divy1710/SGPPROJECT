@@ -1,284 +1,229 @@
-import React, { useState } from "react";
-import { Navbar } from "./Navbar";
-import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
-import { Input } from "../../components/ui/input";
-import { Button } from "../../components/ui/button";
-import { Textarea } from "../../components/ui/textarea";
-import { Label } from "../../components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select";
-import { motion } from "framer-motion";
-import { Upload, X } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { toast } from "react-hot-toast";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
-export function AskQuestion() {
-    const navigate = useNavigate();
-    const [loading, setLoading] = useState(false);
-    const [formData, setFormData] = useState({
+const AskQuestion = () => {
+  const { user } = useSelector((state) => state.auth);
+  const studentId = user?._id; // Get student ID from Redux state
+  const navigate = useNavigate();
+
+  const [facultyId, setFacultyId] = useState(""); // Store faculty ID
+  const [facultyList, setFacultyList] = useState([]); // Store faculty list
+
+  const [formData, setFormData] = useState({
+    studentId: "",
+    facultyId: "",
+    subject: "",
+    questionTitle: "",
+    questionText: "",
+    attachment: null,
+  });
+
+  const [subjects, setSubjects] = useState([]); // Store subjects list
+
+  // Fetch subjects on component mount
+  useEffect(() => {
+    const fetchSubjects = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:8000/api/v1/user/subjects",
+          { withCredentials: true }
+        );
+
+        if (response.data && Array.isArray(response.data.allSub)) {
+          setSubjects(response.data.allSub);
+        } else {
+          console.error("Subjects data is not an array", response.data);
+        }
+      } catch (error) {
+        console.error("Error fetching subjects", error);
+      }
+    };
+    fetchSubjects();
+  }, []);
+
+  // Fetch faculty when subject is selected
+  useEffect(() => {
+    if (formData.subject) {
+      const fetchFaculty = async () => {
+        try {
+          const response = await axios.get(
+            `http://localhost:8000/api/v1/user/faculty?subject=${formData.subject}`,
+            { withCredentials: true }
+          );
+          if (Array.isArray(response.data)) {
+            setFacultyList(response.data);
+          } else {
+            console.error("Faculty data is not an array", response.data);
+          }
+        } catch (error) {
+          console.error("Error fetching faculty", error);
+        }
+      };
+      fetchFaculty();
+    } else {
+      setFacultyList([]); // Clear faculty list when no subject is selected
+    }
+  }, [formData.subject]);
+
+  const handleChange = (e) => {
+    const { name, value, type, files } = e.target;
+
+    if (type === "file") {
+      setFormData((prevState) => ({
+        ...prevState,
+        attachment: files[0],
+      }));
+    } else {
+      setFormData((prevState) => ({
+        ...prevState,
+        [name]: value,
+      }));
+    }
+  };
+
+  // Handle faculty selection
+  const handleFacultyChange = (e) => {
+    const selectedFacultyId = e.target.value;
+    setFacultyId(selectedFacultyId);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (
+      !studentId ||
+      !facultyId ||
+      !formData.subject ||
+      !formData.questionTitle ||
+      !formData.questionText
+    ) {
+      alert("Please fill in all required fields.");
+      return;
+    }
+
+    const submitData = new FormData();
+    submitData.append("studentId", studentId); // Ensure studentId is included
+    submitData.append("facultyId", facultyId); // Ensure facultyId is included
+    submitData.append("subject", formData.subject);
+    submitData.append("questionTitle", formData.questionTitle);
+    submitData.append("questionText", formData.questionText);
+
+    if (formData.attachment) {
+      submitData.append("questionFile", formData.attachment); // Make sure this matches backend key
+    }
+
+    try {
+      await axios.post(
+        "http://localhost:8000/api/v1/question/ask",
+        submitData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+          withCredentials: true,
+        }
+      );
+
+      setFormData({
         subject: "",
         questionTitle: "",
         questionText: "",
-        facultyId: "",
-    });
-    const [file, setFile] = useState(null);
-    const [filePreview, setFilePreview] = useState(null);
+        attachment: null,
+      });
+      setFacultyId(""); // Reset faculty selection
+      navigate("/");
+    } catch (error) {
+      console.error(
+        "Error adding question",
+        error.response?.data || error.message
+      );
+    }
+  };
 
-    // Get faculty list from Redux store (assuming you have this data)
-    const faculties = useSelector((state) => state.auth.faculties) || [];
+  return (
+    <div className="p-6 max-w-lg mx-auto bg-white rounded-lg shadow-md">
+      <h2 className="text-2xl font-bold mb-4">Ask a Question</h2>
 
-    // List of subjects
-    const subjects = [
-        "Mathematics",
-        "Physics",
-        "Chemistry",
-        "Biology",
-        "Computer Science",
-        "English",
-        "History",
-        "Geography",
-        "Economics",
-        "Other"
-    ];
+      {/* Subject Dropdown */}
+      <label className="block mb-2">Select Subject:</label>
+      <select
+        className="w-full p-2 border rounded mb-4"
+        name="subject"
+        value={formData.subject}
+        onChange={handleChange}
+      >
+        <option value="">Select a subject</option>
+        {subjects.length > 0 ? (
+          subjects.map((subject, index) => (
+            <option key={index} value={subject}>
+              {subject}
+            </option>
+          ))
+        ) : (
+          <option disabled>No subjects available</option>
+        )}
+      </select>
 
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }));
-    };
+      {/* Faculty Dropdown */}
+      <label className="block mb-2">Select Faculty:</label>
+      <select
+        className="w-full p-2 border rounded mb-4"
+        name="faculty"
+        value={facultyId}
+        onChange={handleFacultyChange}
+      >
+        <option value="">Select a faculty</option>
+        {facultyList.length > 0 ? (
+          facultyList.map((fac) => (
+            <option key={fac._id} value={fac._id}>
+              {fac.fullname}
+            </option>
+          ))
+        ) : (
+          <option disabled>No faculty available</option>
+        )}
+      </select>
 
-    const handleFileChange = (e) => {
-        const selectedFile = e.target.files[0];
-        if (selectedFile) {
-            setFile(selectedFile);
-            // Create preview URL for image files
-            if (selectedFile.type.startsWith('image/')) {
-                const previewUrl = URL.createObjectURL(selectedFile);
-                setFilePreview(previewUrl);
-            }
-        }
-    };
+      {/* Question Title Input */}
+      <label className="block mb-2">Question Title:</label>
+      <input
+        type="text"
+        className="w-full p-2 border rounded mb-4"
+        name="questionTitle"
+        value={formData.questionTitle}
+        onChange={handleChange}
+      />
 
-    const removeFile = () => {
-        setFile(null);
-        if (filePreview) {
-            URL.revokeObjectURL(filePreview);
-            setFilePreview(null);
-        }
-    };
+      {/* Question Text Input */}
+      <label className="block mb-2">Question Text:</label>
+      <textarea
+        className="w-full p-2 border rounded mb-4"
+        name="questionText"
+        rows="4"
+        value={formData.questionText}
+        onChange={handleChange}
+      ></textarea>
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (!formData.subject || !formData.questionTitle || !formData.questionText || !formData.facultyId) {
-            toast.error("Please fill in all required fields");
-            return;
-        }
+      {/* File Attachment */}
+      <label className="block mb-2">Attach File:</label>
+      <input
+        type="file"
+        className="w-full p-2 border rounded mb-4"
+        name="attachment"
+        onChange={handleChange}
+      />
 
-        setLoading(true);
-        try {
-            const formDataToSend = new FormData();
-            formDataToSend.append("subject", formData.subject);
-            formDataToSend.append("questionTitle", formData.questionTitle);
-            formDataToSend.append("questionText", formData.questionText);
-            formDataToSend.append("facultyId", formData.facultyId);
-            if (file) {
-                formDataToSend.append("file", file);
-            }
+      {/* Submit Button */}
+      <button
+        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+        onClick={handleSubmit}
+      >
+        Submit Question
+      </button>
+    </div>
+  );
+};
 
-            const response = await axios.post("/api/questions", formDataToSend, {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                },
-            });
-
-            if (response.data.success) {
-                toast.success("Question posted successfully!");
-                navigate("/user-home");
-            }
-        } catch (error) {
-            console.error("Error posting question:", error);
-            toast.error(error.response?.data?.message || "Error posting question");
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    return (
-        <div className="min-h-screen bg-zinc-900">
-            <Navbar />
-
-            {/* Decorative Background */}
-            <div className="fixed inset-0 -z-10 overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-zinc-900 to-rose-500/5" />
-                <div className="absolute left-1/2 top-0 -z-10 h-[600px] w-[600px] -translate-x-1/2 opacity-20 blur-3xl">
-                    <div className="absolute h-full w-full bg-gradient-to-br from-emerald-500/30 to-rose-500/30" />
-                </div>
-            </div>
-
-            <div className="container mx-auto py-12 px-6">
-                <motion.div
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6 }}
-                    className="text-center mb-12"
-                >
-                    <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-rose-400 mb-3">
-                        Ask a Question
-                    </h1>
-                    <p className="text-zinc-400 text-lg">Get help from our community of experts</p>
-                </motion.div>
-
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 0.1 }}
-                >
-                    <Card className="max-w-2xl mx-auto bg-zinc-800/30 border-zinc-700/50 backdrop-blur-sm">
-                        <CardContent className="p-6">
-                            <form onSubmit={handleSubmit} className="space-y-6">
-                                {/* Subject Selection */}
-                                <div className="space-y-2">
-                                    <Label htmlFor="subject" className="text-zinc-300">
-                                        Subject
-                                    </Label>
-                                    <Select
-                                        name="subject"
-                                        value={formData.subject}
-                                        onValueChange={(value) => setFormData(prev => ({ ...prev, subject: value }))}
-                                    >
-                                        <SelectTrigger className="bg-zinc-800/50 border-zinc-700 text-zinc-300">
-                                            <SelectValue placeholder="Select a subject" />
-                                        </SelectTrigger>
-                                        <SelectContent className="bg-zinc-800 border-zinc-700">
-                                            {subjects.map((subject) => (
-                                                <SelectItem
-                                                    key={subject}
-                                                    value={subject}
-                                                    className="text-zinc-300 focus:bg-zinc-700 focus:text-zinc-100"
-                                                >
-                                                    {subject}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-
-                                {/* Add Faculty Selection after subject selection */}
-                                <div className="space-y-2">
-                                    <Label htmlFor="faculty" className="text-zinc-300">
-                                        Select Faculty
-                                    </Label>
-                                    <Select
-                                        name="faculty"
-                                        value={formData.facultyId}
-                                        onValueChange={(value) => setFormData(prev => ({ ...prev, facultyId: value }))}
-                                    >
-                                        <SelectTrigger className="bg-zinc-800/50 border-zinc-700 text-zinc-300">
-                                            <SelectValue placeholder="Select a faculty member" />
-                                        </SelectTrigger>
-                                        <SelectContent className="bg-zinc-800 border-zinc-700">
-                                            {faculties.map((faculty) => (
-                                                <SelectItem
-                                                    key={faculty._id}
-                                                    value={faculty._id}
-                                                    className="text-zinc-300 focus:bg-zinc-700 focus:text-zinc-100"
-                                                >
-                                                    {faculty.fullname} - {faculty.department}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-
-                                {/* Question Title */}
-                                <div className="space-y-2">
-                                    <Label htmlFor="questionTitle" className="text-zinc-300">
-                                        Question Title
-                                    </Label>
-                                    <Input
-                                        id="questionTitle"
-                                        name="questionTitle"
-                                        value={formData.questionTitle}
-                                        onChange={handleInputChange}
-                                        className="bg-zinc-800/50 border-zinc-700 text-zinc-300"
-                                        placeholder="Enter a descriptive title"
-                                    />
-                                </div>
-
-                                {/* Question Text */}
-                                <div className="space-y-2">
-                                    <Label htmlFor="questionText" className="text-zinc-300">
-                                        Question Details
-                                    </Label>
-                                    <Textarea
-                                        id="questionText"
-                                        name="questionText"
-                                        value={formData.questionText}
-                                        onChange={handleInputChange}
-                                        className="bg-zinc-800/50 border-zinc-700 text-zinc-300 min-h-[200px]"
-                                        placeholder="Describe your question in detail..."
-                                    />
-                                </div>
-
-                                {/* File Upload */}
-                                <div className="space-y-2">
-                                    <Label className="text-zinc-300">
-                                        Attachments (Optional)
-                                    </Label>
-                                    <div className="border-2 border-dashed border-zinc-700 rounded-lg p-6">
-                                        {!file ? (
-                                            <div className="text-center">
-                                                <Upload className="h-8 w-8 mx-auto text-zinc-500 mb-2" />
-                                                <label className="cursor-pointer">
-                                                    <span className="text-emerald-400 hover:text-emerald-300">
-                                                        Click to upload
-                                                    </span>
-                                                    <input
-                                                        type="file"
-                                                        className="hidden"
-                                                        onChange={handleFileChange}
-                                                        accept="image/*,.pdf,.doc,.docx"
-                                                    />
-                                                </label>
-                                                <p className="text-zinc-500 text-sm mt-1">
-                                                    Supports images, PDFs, and documents
-                                                </p>
-                                            </div>
-                                        ) : (
-                                            <div className="flex items-center justify-between bg-zinc-800/50 rounded p-3">
-                                                <div className="flex items-center space-x-3">
-                                                    <div className="text-zinc-300">{file.name}</div>
-                                                </div>
-                                                <Button
-                                                    type="button"
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    onClick={removeFile}
-                                                    className="text-zinc-400 hover:text-zinc-100"
-                                                >
-                                                    <X className="h-4 w-4" />
-                                                </Button>
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-
-                                {/* Submit Button */}
-                                <Button
-                                    type="submit"
-                                    className="w-full bg-emerald-500 hover:bg-emerald-600 text-white"
-                                    disabled={loading}
-                                >
-                                    {loading ? "Posting..." : "Post Question"}
-                                </Button>
-                            </form>
-                        </CardContent>
-                    </Card>
-                </motion.div>
-            </div>
-        </div>
-    );
-} 
+export default AskQuestion;

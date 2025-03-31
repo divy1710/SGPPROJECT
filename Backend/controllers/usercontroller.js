@@ -43,9 +43,10 @@ export const registerStudent = async (req, res) => {
 };
 
 // Admin Adding Faculty
+
 export const addFaculty = async (req, res) => {
   try {
-    const { fullname, email, password, department, phoneNumber } = req.body;
+    const { fullname, email, password, department, phoneNumber, subject } = req.body; // ✅ Added subject
 
     // Check if requester is admin
     if (req.user.role !== "Admin") {
@@ -54,6 +55,10 @@ export const addFaculty = async (req, res) => {
 
     const existingUser = await User.findOne({ email });
     if (existingUser) return res.status(400).json({ message: "User already exists" });
+
+    if (!subject || !Array.isArray(subject) || subject.length === 0) {
+      return res.status(400).json({ message: "Faculty must have at least one subject" });
+    }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -64,7 +69,8 @@ export const addFaculty = async (req, res) => {
       password: hashedPassword,
       role: "Faculty", // Faculty role assigned by Admin
       department,
-      phoneNumber
+      phoneNumber,
+      subject, // ✅ Added subject field
     });
 
     await newFaculty.save();
@@ -188,3 +194,54 @@ export const updateProfile = async (req, res) => {
   }
 };
 
+
+// Controller to get faculty by subject
+export const getFacultyBySubject = async (req, res) => {
+  try {
+    const { subject } = req.query; // Use req.query instead of req.body for query parameters
+
+    // Check if subject is provided
+    if (!subject) {
+      return res.status(400).json({ message: "Subject is required" });
+    }
+
+    // Fetch all faculty members who teach the selected subject
+    const faculty = await User.find({ 
+      role: "Faculty", 
+      subject: { $in: [subject] } // Find faculty who teach the selected subject
+    });
+
+    if (faculty.length === 0) {
+      return res.status(404).json({ message: "No faculty found for this subject" });
+    }
+
+    // Return the list of faculty members as an array
+    res.json(faculty);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching faculty", error });
+  }
+};
+
+
+export const getAllSub = async (req,res) => {
+  try {
+    
+    const allSub = [
+      "Statistical and Numerical Techniques",
+      "Computer Architecture & Microprocessor Interfacing",
+      "Computer Networks",
+      "Design and Analysis of Algorithms",
+      "Full Stack Web Development",
+      "Human Values and Professional Ethics",
+      "Mobile Application Development",
+      "Cryptography & Network Security",
+      "Machine Learning",
+      "Contributory Personality Development"
+    ]
+res.json({allSub, success:true});
+
+  } catch (error) {
+    console.log(error);
+    
+  }
+}

@@ -6,17 +6,21 @@ import { Button } from "@/components/ui/button";
 import { useSelector } from "react-redux";
 import { useGetAllQuestions } from "@/hooks/useGetAllQuestions";
 import { motion } from "framer-motion";
-import { Calendar, BookOpen, Tag, Eye } from "lucide-react";
+import { Calendar, BookOpen, Tag } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+
+// Define status colors with new theme
+const statusColors = {
+    Answered: "bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30",
+    Pending: "bg-rose-500/20 text-rose-400 hover:bg-rose-500/30",
+};
 
 export function UnSolvedQuestions() {
     useGetAllQuestions();
     const questions = useSelector((state) => state.auth.questions) || [];
-    const [expandedQuestionId, setExpandedQuestionId] = useState(null);
-    const unsolvedQuestions = questions.filter((question) => question?.status === "Pending");
 
-    const toggleAnswerView = (questionId) => {
-        setExpandedQuestionId(expandedQuestionId === questionId ? null : questionId);
-    };
+    const { user } = useSelector((state) => state.auth);
+    const navigate = useNavigate();
 
     // Animation variants
     const containerVariants = {
@@ -46,9 +50,9 @@ export function UnSolvedQuestions() {
 
             {/* Decorative Background */}
             <div className="fixed inset-0 -z-10 overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-rose-500/5 via-zinc-900 to-orange-500/5" />
+                <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-zinc-900 to-rose-500/5" />
                 <div className="absolute left-1/2 top-0 -z-10 h-[600px] w-[600px] -translate-x-1/2 opacity-20 blur-3xl">
-                    <div className="absolute h-full w-full bg-gradient-to-br from-rose-500/30 to-orange-500/30" />
+                    <div className="absolute h-full w-full bg-gradient-to-br from-emerald-500/30 to-rose-500/30" />
                 </div>
             </div>
 
@@ -59,13 +63,13 @@ export function UnSolvedQuestions() {
                     transition={{ duration: 0.6 }}
                     className="text-center mb-12"
                 >
-                    <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-rose-400 to-orange-400 mb-3">
-                        Unsolved Questions
+                    <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-rose-400 mb-3">
+                        All Questions
                     </h1>
-                    <p className="text-zinc-400 text-lg">Questions waiting for faculty responses</p>
+                    <p className="text-zinc-400 text-lg">Browse all questions from the community</p>
                 </motion.div>
 
-                {unsolvedQuestions.length === 0 ? (
+                {questions.length === 0 ? (
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
@@ -73,8 +77,8 @@ export function UnSolvedQuestions() {
                         className="max-w-2xl mx-auto mt-8 text-center p-12 bg-zinc-800/30 rounded-xl border border-zinc-700/50 backdrop-blur-sm"
                     >
                         <div className="text-7xl mb-6">✨</div>
-                        <h3 className="text-zinc-100 text-2xl font-semibold mb-3">All caught up!</h3>
-                        <p className="text-zinc-400 text-lg">No pending questions at the moment</p>
+                        <h3 className="text-zinc-100 text-2xl font-semibold mb-3">No questions yet</h3>
+                        <p className="text-zinc-400 text-lg">Be the first to ask a question!</p>
                     </motion.div>
                 ) : (
                     <motion.div
@@ -83,26 +87,26 @@ export function UnSolvedQuestions() {
                         animate="visible"
                         className="max-w-4xl mx-auto grid gap-6"
                     >
-                        {unsolvedQuestions.map((question) => (
+                        {questions.map((question) => (
                             <motion.div
                                 key={question?._id}
                                 variants={cardVariants}
                                 whileHover={{ scale: 1.01 }}
                                 className="transform transition-all duration-300"
                             >
-                                <Card className="bg-zinc-800/30 border-zinc-700/50 backdrop-blur-sm shadow-xl overflow-hidden">
-                                    <CardHeader className="bg-gradient-to-r from-rose-500/10 to-orange-500/10 border-b border-zinc-700/50 p-6">
+                                <Card className="bg-zinc-800/30 border-zinc-700/50 backdrop-blur-sm shadow-xl overflow-hidden relative">
+                                    <CardHeader className="bg-gradient-to-r from-emerald-500/10 to-rose-500/10 border-b border-zinc-700/50 p-6">
                                         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                                             <CardTitle className="text-2xl text-zinc-100">
                                                 {question?.questionTitle || "Untitled Question"}
                                             </CardTitle>
-                                            <Badge className="bg-rose-500/20 text-rose-400 hover:bg-rose-500/30">
+                                            <Badge className={`${statusColors[question?.status]} text-sm px-4 py-1`}>
                                                 {question?.status}
                                             </Badge>
                                         </div>
                                     </CardHeader>
 
-                                    <CardContent className="p-6">
+                                    <CardContent className="p-6 relative">
                                         <div className="space-y-6">
                                             {/* Subject and Date */}
                                             <div className="flex flex-wrap items-center gap-6 text-sm">
@@ -122,50 +126,16 @@ export function UnSolvedQuestions() {
                                                     {question?.questionText || "No question text provided."}
                                                 </p>
                                             </div>
-
-                                            {/* Show Details when expanded */}
-                                            {expandedQuestionId === question._id && (
-                                                <motion.div
-                                                    initial={{ opacity: 0, y: -10 }}
-                                                    animate={{ opacity: 1, y: 0 }}
-                                                    transition={{ duration: 0.3 }}
-                                                >
-                                                    {/* Asked to Faculty */}
-                                                    <div className="bg-rose-500/5 p-6 rounded-xl border border-rose-500/20">
-                                                        <div className="flex items-center space-x-2">
-                                                            <span className="text-zinc-400">Asked to:</span>
-                                                            <span className="text-rose-400 font-medium">
-                                                                {question?.facultyId?.fullname || "Unknown"}
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                </motion.div>
-                                            )}
-
-                                            {/* Tags and View Details Button */}
-                                            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pt-2">
-                                                <div className="flex items-center gap-2 flex-wrap">
-                                                    <Tag className="h-4 w-4 text-zinc-400" />
-                                                    {question?.tags?.map((tag, idx) => (
-                                                        <Badge
-                                                            key={idx}
-                                                            className="bg-zinc-700/50 text-zinc-300 hover:bg-zinc-700 transition-colors"
-                                                        >
-                                                            {tag}
-                                                        </Badge>
-                                                    ))}
-                                                </div>
-
-                                                <Button
-                                                    variant="outline"
-                                                    onClick={() => toggleAnswerView(question._id)}
-                                                    className="group border-rose-500/50 text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 transition-all duration-300"
-                                                >
-                                                    <Eye className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" />
-                                                    {expandedQuestionId === question._id ? 'Hide Details' : 'View Details'}
-                                                </Button>
-                                            </div>
                                         </div>
+                                        {user?.role === "Faculty" && (
+                                            <Button
+                                                variant="outline"
+                                                className="absolute left-6 bottom-6 border-emerald-500/50 text-emerald-400 hover:bg-emerald-500/10 hover:text-emerald-300 transition-all duration-300"
+                                                onClick={() => navigate(`/answer/${question._id}`)}
+                                            >
+                                                Answer
+                                            </Button>
+                                        )}
                                     </CardContent>
                                 </Card>
                             </motion.div>
@@ -175,4 +145,4 @@ export function UnSolvedQuestions() {
             </div>
         </div>
     );
-} 
+}

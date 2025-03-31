@@ -17,6 +17,8 @@ const statusColors = {
 export function AllQuestions() {
     useGetAllQuestions();
     const questions = useSelector((state) => state.auth.questions) || [];
+
+    const {user} = useSelector((state)=>state.auth)
     // Remove navigate since we won't be using it
 
     // Add state to track which question's answer is expanded

@@ -12,7 +12,8 @@ import { Toaster } from 'sonner'
 import Profile from './components/profilePages/Profile'
 import EditProfile from './components/profilePages/EditProfile'
 import { UserHome } from './components/pages/UserHome'
-import { AskQuestion } from './components/pages/AskQuestion'
+import AskQuestion from './components/pages/AskQuestion'
+import Answer from './components/facultyPages/Answer'
 
 const appRouter = createBrowserRouter([
   { path: "/", element: <Home /> },
@@ -25,6 +26,7 @@ const appRouter = createBrowserRouter([
   { path: "/allquestions", element: <AllQuestions /> },
   { path: "/profile", element: <Profile /> },
   { path: "/edit/profile", element: <EditProfile /> },
+  { path: "/answer/:id", element: <Answer /> },
 ])
 
 export function App() {
