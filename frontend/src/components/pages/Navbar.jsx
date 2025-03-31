@@ -46,6 +46,9 @@ export function Navbar() {
         <div className="hidden md:flex items-center space-x-6">
           {isAuthenticated && (
             <>
+             <Link to="/homepage" className="text-gray-300 hover:text-white transition duration-200">
+              Home
+              </Link>
               <Link to="/allquestions" className="text-gray-300 hover:text-white transition duration-200">
                 All Questions
               </Link>
@@ -55,6 +58,7 @@ export function Navbar() {
               <Link to="/unsolvedquestions" className="text-gray-300 hover:text-white transition duration-200">
                 Unsolved Questions
               </Link>
+             
             </>
           )}
         </div>

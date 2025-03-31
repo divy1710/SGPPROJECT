@@ -11,11 +11,15 @@ import { Footer } from "./components/pages/Footer"
 import { Toaster } from 'sonner'
 import Profile from './components/profilePages/Profile'
 import EditProfile from './components/profilePages/EditProfile'
+import { UserHome } from './components/pages/UserHome'
+import { AskQuestion } from './components/pages/AskQuestion'
 
 const appRouter = createBrowserRouter([
   { path: "/", element: <Home /> },
+  {path:"/homepage",element:<UserHome/>},
   { path: "/login", element: <Login /> },
   { path: "/signup", element: <Signup /> },
+  { path: "/askquestion", element: <AskQuestion /> },
   { path: "/solvedquestions", element: <SolvedQuestion /> },
   { path: "/unsolvedquestions", element: <UnSolvedQuestions /> },
   { path: "/allquestions", element: <AllQuestions /> },

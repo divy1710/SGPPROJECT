@@ -26,7 +26,7 @@ export function Login({ isDialog = false, setIsLoginOpen, setIsSignupOpen }) {
 
       dispatch(setUser(response.data.user));
       if (isDialog) setIsLoginOpen(false);
-      navigate("/allquestions");
+      navigate("/homepage");
     } catch (error) {
       console.error("Login failed", error.response?.data?.message || error.message);
     } finally {
