@@ -11,56 +11,16 @@ import { Footer } from "./components/pages/Footer"
 import { Toaster } from 'sonner'
 import Profile from './components/profilePages/Profile'
 import EditProfile from './components/profilePages/EditProfile'
-import ProtectedRoute from './components/shared/ProtectedRoutes'
 
-// Remove the AppContent component and simplify the router structure
 const appRouter = createBrowserRouter([
-  {
-    path: "/",
-    element: <Home />
-  },
+  { path: "/", element: <Home /> },
   { path: "/login", element: <Login /> },
   { path: "/signup", element: <Signup /> },
-  {
-    path: "/solvedquestions",
-    element: (
-      <ProtectedRoute>
-        <SolvedQuestion />
-      </ProtectedRoute>
-    )
-  },
-  {
-    path: "/unsolvedquestions",
-    element: (
-      <ProtectedRoute>
-        <UnSolvedQuestions />
-      </ProtectedRoute>
-    )
-  },
-  {
-    path: "/allquestions",
-    element: (
-      <ProtectedRoute>
-        <AllQuestions />
-      </ProtectedRoute>
-    )
-  },
-  {
-    path: "/profile",
-    element: (
-      <ProtectedRoute>
-        <Profile />
-      </ProtectedRoute>
-    )
-  },
-  {
-    path: "/edit/profile",
-    element: (
-      <ProtectedRoute>
-        <EditProfile />
-      </ProtectedRoute>
-    )
-  },
+  { path: "/solvedquestions", element: <SolvedQuestion /> },
+  { path: "/unsolvedquestions", element: <UnSolvedQuestions /> },
+  { path: "/allquestions", element: <AllQuestions /> },
+  { path: "/profile", element: <Profile /> },
+  { path: "/edit/profile", element: <EditProfile /> },
 ])
 
 export function App() {

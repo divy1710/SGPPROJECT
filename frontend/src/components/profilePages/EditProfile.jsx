@@ -8,6 +8,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Label } from "@/components/ui/label";
 import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
+import { motion } from "framer-motion";
 
 export default function EditProfile() {
   const { user } = useSelector((state) => state.auth);
@@ -34,7 +36,7 @@ export default function EditProfile() {
     const file = e.target.files[0];
     if (file) {
       setProfilePicture(file);
-      setPreview(URL.createObjectURL(file)); // Show preview before uploading
+      setPreview(URL.createObjectURL(file));
     }
   };
 
@@ -64,7 +66,7 @@ export default function EditProfile() {
         }
       );
 
-      dispatch(setUser(data.user)); // Update Redux state
+      dispatch(setUser(data.user));
       navigate("/profile");
       toast.success("Profile updated successfully!");
     } catch (error) {
@@ -75,94 +77,142 @@ export default function EditProfile() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto my-10 bg-zinc-900 p-6 rounded-xl shadow-lg border border-zinc-800">
-      <h2 className="text-2xl font-bold text-white text-center mb-6">
-        Manage Profile
-      </h2>
-
-      {/* Profile Picture */}
-      <div className="flex flex-col items-center mb-6">
-        <label htmlFor="profilePicture" className="cursor-pointer">
-          <Avatar className="h-24 w-24 border-2 border-emerald-500">
-            <AvatarImage src={preview} alt="Profile Picture" />
-            <AvatarFallback className="bg-emerald-500/10 text-emerald-500">
-              {user?.fullname?.charAt(0)}
-            </AvatarFallback>
-          </Avatar>
-        </label>
-        <input
-          type="file"
-          id="profilePicture"
-          name="profilePicture"
-          className="hidden"
-          onChange={handleImageChange}
-          accept="image/*"
-        />
-        <span className="text-xs text-zinc-400 mt-2">
-          Click to change profile picture
-        </span>
+    <div className="min-h-screen bg-zinc-900">
+      {/* Enhanced Decorative Background */}
+      <div className="fixed inset-0 -z-10 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-zinc-900 to-teal-500/5" />
+        <div className="absolute left-1/2 top-0 -z-10 h-[600px] w-[600px] -translate-x-1/2 opacity-20 blur-3xl">
+          <div className="absolute h-full w-full bg-gradient-to-br from-emerald-500/30 to-teal-500/30" />
+        </div>
       </div>
 
-      {/* Profile Form */}
-      <form onSubmit={handleUpdateProfile} className="space-y-4">
-        <div>
-          <Label className="text-white">Full Name</Label>
-          <Input
-            name="fullname"
-            value={formData.fullname}
-            onChange={handleChange}
-            required
-            className="bg-zinc-800 text-white"
-          />
-        </div>
-
-        <div>
-          <Label className="text-white">Phone Number</Label>
-          <Input
-            name="phoneNumber"
-            value={formData.phoneNumber}
-            onChange={handleChange}
-            required
-            className="bg-zinc-800 text-white"
-          />
-        </div>
-
-        <div>
-          <Label className="text-white">Department</Label>
-          <Input
-            name="department"
-            value={formData.department}
-            onChange={handleChange}
-            required
-            className="bg-zinc-800 text-white"
-          />
-        </div>
-
-        {user.role === "Student" && (
-          <div>
-            <Label className="text-white">Semester</Label>
-            <Input
-              name="semester"
-              type="number"
-              value={formData.semester}
-              onChange={handleChange}
-              required
-              min={1}
-              max={8}
-              className="bg-zinc-800 text-white"
-            />
-          </div>
-        )}
-
-        {/* Update Button */}
-        <Button
-          type="submit"
-          className="w-full cursor-pointer bg-emerald-500 mt-4"
-          disabled={loading}
+      <div className="container mx-auto py-12 px-6">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
         >
-          {loading ? "Updating..." : "Update Profile"}
-        </Button>
-      </form>
+          <Card className="max-w-3xl mx-auto bg-zinc-800/30 border-zinc-700/50 backdrop-blur-sm shadow-xl">
+            <CardHeader className="text-center border-b border-zinc-700/50 pb-8">
+              <CardTitle className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-500">
+                Edit Your Profile
+              </CardTitle>
+              <p className="text-zinc-400 mt-2">Update your personal information and profile picture</p>
+            </CardHeader>
+
+            <CardContent className="p-8">
+              {/* Profile Picture Section */}
+              <div className="flex flex-col items-center mb-10">
+                <label htmlFor="profilePicture" className="cursor-pointer group relative">
+                  <div className="relative">
+                    <Avatar className="h-32 w-32 border-4 border-emerald-500/20 transition-all duration-300 group-hover:border-emerald-500/40 shadow-xl">
+                      <AvatarImage src={preview} alt="Profile Picture" className="object-cover" />
+                      <AvatarFallback className="bg-emerald-500/10 text-emerald-500 text-3xl">
+                        {user?.fullname?.charAt(0)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="absolute inset-0 bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                      <span className="text-white text-sm">Change Photo</span>
+                    </div>
+                  </div>
+                </label>
+                <input
+                  type="file"
+                  id="profilePicture"
+                  name="profilePicture"
+                  className="hidden"
+                  onChange={handleImageChange}
+                  accept="image/*"
+                />
+              </div>
+
+              {/* Profile Form with Grid Layout */}
+              <form onSubmit={handleUpdateProfile} className="space-y-8">
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label className="text-zinc-300 font-medium">Full Name</Label>
+                    <Input
+                      name="fullname"
+                      value={formData.fullname}
+                      onChange={handleChange}
+                      required
+                      className="bg-zinc-800/50 border-zinc-700 text-zinc-100 h-11"
+                      placeholder="Enter your full name"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="text-zinc-300 font-medium">Phone Number</Label>
+                    <Input
+                      name="phoneNumber"
+                      value={formData.phoneNumber}
+                      onChange={handleChange}
+                      required
+                      className="bg-zinc-800/50 border-zinc-700 text-zinc-100 h-11"
+                      placeholder="Enter your phone number"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="text-zinc-300 font-medium">Department</Label>
+                    <Input
+                      name="department"
+                      value={formData.department}
+                      onChange={handleChange}
+                      required
+                      className="bg-zinc-800/50 border-zinc-700 text-zinc-100 h-11"
+                      placeholder="Enter your department"
+                    />
+                  </div>
+
+                  {user.role === "Student" && (
+                    <div className="space-y-2">
+                      <Label className="text-zinc-300 font-medium">Semester</Label>
+                      <Input
+                        name="semester"
+                        type="number"
+                        value={formData.semester}
+                        onChange={handleChange}
+                        required
+                        min={1}
+                        max={8}
+                        className="bg-zinc-800/50 border-zinc-700 text-zinc-100 h-11"
+                        placeholder="Enter semester (1-8)"
+                      />
+                    </div>
+                  )}
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex gap-4 pt-6 border-t border-zinc-700/50">
+                  <Button
+                    type="submit"
+                    disabled={loading}
+                    className="flex-1 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30 transition-all duration-300 h-11 text-base font-medium"
+                  >
+                    {loading ? (
+                      <span className="flex items-center gap-2">
+                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        Updating...
+                      </span>
+                    ) : (
+                      "Save Changes"
+                    )}
+                  </Button>
+                  <Button
+                    type="button"
+                    onClick={() => navigate("/profile")}
+                    variant="outline"
+                    className="flex-1 border-zinc-700 text-zinc-300 hover:bg-zinc-800 h-11 text-base font-medium"
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </form>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </div>
     </div>
   );
 }

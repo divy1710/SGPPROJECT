@@ -28,7 +28,7 @@ export function Navbar() {
   return (
     <nav className="sticky top-0 border-b border-zinc-800 bg-gradient-to-r from-zinc-900 via-zinc-800 to-zinc-900 text-zinc-100 shadow-xl z-50 backdrop-blur-sm">
       <div className="flex h-16 items-center px-6 container mx-auto justify-between flex-wrap">
-        
+
         {/* Logo */}
         <div
           className="flex items-center space-x-3 cursor-pointer transform hover:scale-105 transition-transform duration-200"
@@ -44,15 +44,19 @@ export function Navbar() {
 
         {/* Navigation Links */}
         <div className="hidden md:flex items-center space-x-6">
-          <Link to="/allquestions" className="text-gray-300 hover:text-white transition duration-200">
-            All Questions
-          </Link>
-          <Link to="/solvedquestions" className="text-gray-300 hover:text-white transition duration-200">
-            Solved Questions
-          </Link>
-          <Link to="/unsolvedquestions" className="text-gray-300 hover:text-white transition duration-200">
-            Unsolved Questions
-          </Link>
+          {isAuthenticated && (
+            <>
+              <Link to="/allquestions" className="text-gray-300 hover:text-white transition duration-200">
+                All Questions
+              </Link>
+              <Link to="/solvedquestions" className="text-gray-300 hover:text-white transition duration-200">
+                Solved Questions
+              </Link>
+              <Link to="/unsolvedquestions" className="text-gray-300 hover:text-white transition duration-200">
+                Unsolved Questions
+              </Link>
+            </>
+          )}
         </div>
 
         {/* Authentication & Profile Section */}
@@ -85,8 +89,8 @@ export function Navbar() {
 
               <PopoverContent className="w-48 p-2 mt-2 bg-zinc-900 border border-zinc-800 rounded-lg shadow-lg">
                 <div className="flex flex-col">
-                  <Button 
-                    variant="ghost" 
+                  <Button
+                    variant="ghost"
                     className="flex items-center gap-2 justify-start hover:bg-gray-100 rounded-lg transition-all duration-200"
                     asChild
                   >
@@ -96,8 +100,8 @@ export function Navbar() {
                     </Link>
                   </Button>
 
-                  <Button 
-                    variant="ghost" 
+                  <Button
+                    variant="ghost"
                     className="flex items-center gap-2 justify-start text-red-600 hover:bg-red-50 hover:text-red-700 rounded-lg transition-all duration-200"
                     onClick={handleLogout}
                   >
