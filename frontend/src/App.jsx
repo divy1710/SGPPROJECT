@@ -20,7 +20,7 @@ import FacultySolvedQuestion from './components/facultyPages/FacultySolvedQuesti
 
 const appRouter = createBrowserRouter([
   { path: "/", element: <Home /> },
-  {path:"/homepage",element:<UserHome/>},
+  { path: "/homepage", element: <UserHome /> },
   { path: "/login", element: <Login /> },
   { path: "/signup", element: <Signup /> },
   { path: "/askquestion", element: <AskQuestion /> },
@@ -32,9 +32,9 @@ const appRouter = createBrowserRouter([
   { path: "/answer/:id", element: <Answer /> },
 
   // faculty routes
-  { path:"/faculty/allquestions", element:<FacultyAllQuestion/>},
-  { path:"/faculty/unsolved/questions", element:<FacultyUnsolvedQuestion/>},
-  { path:"/faculty/solved/questions", element:<FacultySolvedQuestion/>},
+  { path: "/faculty/allquestions", element: <FacultyAllQuestion /> },
+  { path: "/faculty/unsolved/questions", element: <FacultyUnsolvedQuestion /> },
+  { path: "/faculty/solved/questions", element: <FacultySolvedQuestion /> },
 ])
 
 export function App() {

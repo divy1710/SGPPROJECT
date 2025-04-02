@@ -16,13 +16,17 @@ import {
     BookMarked
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { FacultyHome } from "./FacultyHome";
 
 export function UserHome() {
     useGetAllQuestions();
     const navigate = useNavigate();
     const questions = useSelector((state) => state.auth.questions) || [];
     const user = useSelector((state) => state.auth.user);
-
+    if (user?.role === "faculty") {
+        return <FacultyHome />
+        
+    }
     // Calculate statistics
     const totalQuestions = questions.length;
     const answeredQuestions = questions.filter(q => q.status === "Answered").length;

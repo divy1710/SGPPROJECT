@@ -19,7 +19,7 @@ export function UnSolvedQuestions() {
     useGetAllQuestions();
     let questions = useSelector((state) => state.auth.questions) || [];
 
-    questions = questions.filter((question)=>(question.status === "Pending"))
+    questions = questions.filter((question) => question.status === "Pending");
 
     const { user } = useSelector((state) => state.auth);
     const navigate = useNavigate();
@@ -110,7 +110,7 @@ export function UnSolvedQuestions() {
 
                                     <CardContent className="p-6 relative">
                                         <div className="space-y-6">
-                                            {/* Subject and Date */}
+                                            {/* Subject, Date, and Asked By */}
                                             <div className="flex flex-wrap items-center gap-6 text-sm">
                                                 <div className="flex items-center gap-2 text-zinc-400">
                                                     <BookOpen className="h-4 w-4" />
@@ -119,6 +119,10 @@ export function UnSolvedQuestions() {
                                                 <div className="flex items-center gap-2 text-zinc-400">
                                                     <Calendar className="h-4 w-4" />
                                                     <span>{new Date(question?.createdAt).toLocaleDateString()}</span>
+                                                </div>
+                                                <div className="flex items-center gap-2 text-zinc-400">
+                                                    <Tag className="h-4 w-4" />
+                                                    <span>Asked to: {question?.facultyId?.fullname || "Unknown"}</span>
                                                 </div>
                                             </div>
 

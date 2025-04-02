@@ -2,6 +2,10 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Navbar } from "./Navbar";
 
 const AskQuestion = () => {
   const { user } = useSelector((state) => state.auth);
@@ -143,85 +147,138 @@ const AskQuestion = () => {
   };
 
   return (
-    <div className="p-6 max-w-lg mx-auto bg-white rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold mb-4">Ask a Question</h2>
+    <div className="min-h-screen bg-zinc-900">
+      <Navbar />
 
-      {/* Subject Dropdown */}
-      <label className="block mb-2">Select Subject:</label>
-      <select
-        className="w-full p-2 border rounded mb-4"
-        name="subject"
-        value={formData.subject}
-        onChange={handleChange}
-      >
-        <option value="">Select a subject</option>
-        {subjects.length > 0 ? (
-          subjects.map((subject, index) => (
-            <option key={index} value={subject}>
-              {subject}
-            </option>
-          ))
-        ) : (
-          <option disabled>No subjects available</option>
-        )}
-      </select>
+      {/* Decorative Background */}
+      <div className="fixed inset-0 -z-10 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-zinc-900 to-rose-500/5" />
+        <div className="absolute left-1/2 top-0 -z-10 h-[600px] w-[600px] -translate-x-1/2 opacity-20 blur-3xl">
+          <div className="absolute h-full w-full bg-gradient-to-br from-emerald-500/30 to-rose-500/30" />
+        </div>
+      </div>
 
-      {/* Faculty Dropdown */}
-      <label className="block mb-2">Select Faculty:</label>
-      <select
-        className="w-full p-2 border rounded mb-4"
-        name="faculty"
-        value={facultyId}
-        onChange={handleFacultyChange}
-      >
-        <option value="">Select a faculty</option>
-        {facultyList.length > 0 ? (
-          facultyList.map((fac) => (
-            <option key={fac._id} value={fac._id}>
-              {fac.fullname}
-            </option>
-          ))
-        ) : (
-          <option disabled>No faculty available</option>
-        )}
-      </select>
+      <div className="container mx-auto py-12 px-6">
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-12"
+        >
+          <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-rose-400 mb-3">
+            Ask a Question
+          </h1>
+          <p className="text-zinc-400 text-lg">Get help from our expert faculty members</p>
+        </motion.div>
 
-      {/* Question Title Input */}
-      <label className="block mb-2">Question Title:</label>
-      <input
-        type="text"
-        className="w-full p-2 border rounded mb-4"
-        name="questionTitle"
-        value={formData.questionTitle}
-        onChange={handleChange}
-      />
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          <Card className="bg-zinc-800/30 border-zinc-700/50 backdrop-blur-sm">
+            <CardContent className="p-8 space-y-6">
+              {/* Subject Dropdown */}
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-zinc-300">Select Subject</label>
+                <select
+                  className="w-full px-4 py-2 bg-zinc-800/50 border border-zinc-700 rounded-md text-zinc-100 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                  name="subject"
+                  value={formData.subject}
+                  onChange={handleChange}
+                >
+                  <option value="" className="bg-zinc-800">Choose a subject</option>
+                  {subjects.length > 0 ? (
+                    subjects.map((subject, index) => (
+                      <option key={index} value={subject} className="bg-zinc-800">
+                        {subject}
+                      </option>
+                    ))
+                  ) : (
+                    <option disabled className="bg-zinc-800">No subjects available</option>
+                  )}
+                </select>
+              </div>
 
-      {/* Question Text Input */}
-      <label className="block mb-2">Question Text:</label>
-      <textarea
-        className="w-full p-2 border rounded mb-4"
-        name="questionText"
-        rows="4"
-        value={formData.questionText}
-        onChange={handleChange}
-      ></textarea>
+              {/* Faculty Dropdown */}
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-zinc-300">Select Faculty</label>
+                <select
+                  className="w-full px-4 py-2 bg-zinc-800/50 border border-zinc-700 rounded-md text-zinc-100 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                  name="faculty"
+                  value={facultyId}
+                  onChange={handleFacultyChange}
+                >
+                  <option value="" className="bg-zinc-800">Choose a faculty member</option>
+                  {facultyList.length > 0 ? (
+                    facultyList.map((fac) => (
+                      <option key={fac._id} value={fac._id} className="bg-zinc-800">
+                        {fac.fullname}
+                      </option>
+                    ))
+                  ) : (
+                    <option disabled className="bg-zinc-800">No faculty available</option>
+                  )}
+                </select>
+              </div>
 
-      {/* File Attachment */}
-      <label className="block mb-2">Attach File:</label>
-      <input
-        type="file"
-        className="w-full p-2 border rounded mb-4"
-        name="attachment"
-        onChange={handleChange}
-      />
+              {/* Question Title Input */}
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-zinc-300">Question Title</label>
+                <input
+                  type="text"
+                  className="w-full px-4 py-2 bg-zinc-800/50 border border-zinc-700 rounded-md text-zinc-100 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                  name="questionTitle"
+                  value={formData.questionTitle}
+                  onChange={handleChange}
+                  placeholder="Enter a clear and concise title"
+                />
+              </div>
 
-      {/* Submit Button */}
-      <button
-        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-        onClick={handleSubmit}
-      >
-        Submit Question
-      </button>
+              {/* Question Text Input */}
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-zinc-300">Question Details</label>
+                <textarea
+                  className="w-full px-4 py-2 bg-zinc-800/50 border border-zinc-700 rounded-md text-zinc-100 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                  name="questionText"
+                  rows="6"
+                  value={formData.questionText}
+                  onChange={handleChange}
+                  placeholder="Describe your question in detail..."
+                ></textarea>
+              </div>
+
+              {/* File Attachment */}
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-zinc-300">Attach File (Optional)</label>
+                <div className="flex items-center space-x-4">
+                  <input
+                    type="file"
+                    className="block w-full text-sm text-zinc-400
+                      file:mr-4 file:py-2 file:px-4
+                      file:rounded-md file:border-0
+                      file:text-sm file:font-semibold
+                      file:bg-emerald-500/10 file:text-emerald-400
+                      hover:file:bg-emerald-500/20"
+                    name="attachment"
+                    onChange={handleChange}
+                  />
+                </div>
+              </div>
+
+              {/* Submit Button */}
+              <div className="pt-4">
+                <Button
+                  className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 text-white hover:from-emerald-600 hover:to-emerald-700 transition-all duration-200"
+                  onClick={handleSubmit}
+                >
+                  Submit Question
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </div>
     </div>
   );
 };
