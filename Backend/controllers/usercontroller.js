@@ -228,7 +228,7 @@ export const getAllSub = async (req,res) => {
     
     const allSub = [
       "Statistical and Numerical Techniques",
-      "Computer Architecture & Microprocessor Interfacing",
+      "Computer Architecture and Microprocessor Interfacing",
       "Computer Networks",
       "Design and Analysis of Algorithms",
       "Full Stack Web Development",

@@ -4,7 +4,11 @@ import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { logout, setUser } from "@/redux/authSlice";
 import axios from "axios";
-import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@/components/ui/popover";
 import { User2, LogOut, ChevronDown } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -17,18 +21,22 @@ export function Navbar() {
   // Logout Function
   const handleLogout = async () => {
     try {
-      await axios.get("http://localhost:8000/api/v1/user/logout", { withCredentials: true });
+      await axios.get("http://localhost:8000/api/v1/user/logout", {
+        withCredentials: true,
+      });
       dispatch(setUser(null)); // Clear user from Redux
       navigate("/");
     } catch (error) {
-      console.error("Logout failed:", error.response?.data?.message || error.message);
+      console.error(
+        "Logout failed:",
+        error.response?.data?.message || error.message
+      );
     }
   };
 
   return (
     <nav className="sticky top-0 border-b border-zinc-800 bg-gradient-to-r from-zinc-900 via-zinc-800 to-zinc-900 text-zinc-100 shadow-xl z-50 backdrop-blur-sm">
       <div className="flex h-16 items-center px-6 container mx-auto justify-between flex-wrap">
-
         {/* Logo */}
         <div
           className="flex items-center space-x-3 cursor-pointer transform hover:scale-105 transition-transform duration-200"
@@ -46,19 +54,42 @@ export function Navbar() {
         <div className="hidden md:flex items-center space-x-6">
           {isAuthenticated && (
             <>
-             <Link to="/homepage" className="text-gray-300 hover:text-white transition duration-200">
-              Home
+              <Link
+                to="/homepage"
+                className="text-gray-300 hover:text-white transition duration-200"
+              >
+                Home
               </Link>
-              <Link to="/allquestions" className="text-gray-300 hover:text-white transition duration-200">
+              <Link
+                to={
+                  user?.role === "Student"
+                    ? "/allquestions"
+                    : "/faculty/allquestions"
+                }
+                className="text-gray-300 hover:text-white transition duration-200"
+              >
                 All Questions
               </Link>
-              <Link to="/solvedquestions" className="text-gray-300 hover:text-white transition duration-200">
+              <Link
+                to={
+                  user?.role === "Student"
+                    ? "/solvedquestions"
+                    : "/faculty/solved/questions"
+                }
+                className="text-gray-300 hover:text-white transition duration-200"
+              >
                 Solved Questions
               </Link>
-              <Link to="/unsolvedquestions" className="text-gray-300 hover:text-white transition duration-200">
+              <Link
+                to={
+                  user?.role === "Student"
+                    ? "/unsolvedquestions"
+                    : "/faculty/unsolved/questions"
+                }
+                className="text-gray-300 hover:text-white transition duration-200"
+              >
                 Unsolved Questions
               </Link>
-             
             </>
           )}
         </div>
@@ -68,10 +99,16 @@ export function Navbar() {
           {!isAuthenticated ? (
             <>
               {/* Show Login and Signup Buttons */}
-              <Button onClick={() => navigate("/login")} className="text-sm font-medium">
+              <Button
+                onClick={() => navigate("/login")}
+                className="text-sm font-medium"
+              >
                 Login
               </Button>
-              <Button onClick={() => navigate("/signup")} className="text-sm font-medium bg-emerald-500">
+              <Button
+                onClick={() => navigate("/signup")}
+                className="text-sm font-medium bg-emerald-500"
+              >
                 Sign Up
               </Button>
             </>
@@ -79,14 +116,22 @@ export function Navbar() {
             // Show Popover for Logged-in User
             <Popover>
               <PopoverTrigger asChild>
-                <Button variant="ghost" className="flex items-center gap-2 hover:bg-white/10 transition-all duration-200">
+                <Button
+                  variant="ghost"
+                  className="flex items-center gap-2 hover:bg-white/10 transition-all duration-200"
+                >
                   <Avatar className="h-8 w-8 border-2 border-emerald-500/20">
-                    <AvatarImage src={user?.avatar || "https://github.com/shadcn.png"} alt={user?.name} />
+                    <AvatarImage
+                      src={user?.avatar || "https://github.com/shadcn.png"}
+                      alt={user?.name}
+                    />
                     <AvatarFallback className="bg-emerald-500/10 text-emerald-500">
                       {user?.name?.charAt(0) || "U"}
                     </AvatarFallback>
                   </Avatar>
-                  <span className="text-sm font-medium text-gray-200">{user?.name}</span>
+                  <span className="text-sm font-medium text-gray-200">
+                    {user?.name}
+                  </span>
                   <ChevronDown size={16} className="text-gray-400" />
                 </Button>
               </PopoverTrigger>
@@ -98,7 +143,10 @@ export function Navbar() {
                     className="flex items-center gap-2 justify-start hover:bg-gray-100 rounded-lg transition-all duration-200"
                     asChild
                   >
-                    <Link to="/profile" className="text-gray-300 transition duration-200">
+                    <Link
+                      to="/profile"
+                      className="text-gray-300 transition duration-200"
+                    >
                       <User2 size={18} />
                       View Profile
                     </Link>

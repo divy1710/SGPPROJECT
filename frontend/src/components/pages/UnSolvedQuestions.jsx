@@ -17,7 +17,9 @@ const statusColors = {
 
 export function UnSolvedQuestions() {
     useGetAllQuestions();
-    const questions = useSelector((state) => state.auth.questions) || [];
+    let questions = useSelector((state) => state.auth.questions) || [];
+
+    questions = questions.filter((question)=>(question.status === "Pending"))
 
     const { user } = useSelector((state) => state.auth);
     const navigate = useNavigate();

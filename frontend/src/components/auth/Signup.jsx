@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -37,7 +37,9 @@ export function Signup({ setIsSignupOpen, setIsLoginOpen }) {
         }
       });
 
-      setIsSignupOpen(false);
+      if (setIsSignupOpen) {
+        setIsSignupOpen(false);
+      }
       if (response.data.success) {
         navigate("/login");
       }
@@ -49,21 +51,16 @@ export function Signup({ setIsSignupOpen, setIsLoginOpen }) {
   };
 
   const handleSwitchToLogin = () => {
-    setIsSignupOpen(false);
-    setIsLoginOpen(true);
+    if (setIsSignupOpen) {
+      setIsSignupOpen(false);
+      setIsLoginOpen(true);
+    } else {
+      navigate("/login");
+    }
   };
 
-  return (
-    <DialogContent className="sm:max-w-[425px] bg-zinc-900 border border-zinc-800">
-      <DialogHeader>
-        <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-emerald-400 to-teal-500 bg-clip-text text-transparent">
-          Create Account
-        </DialogTitle>
-        <p className="text-zinc-400 text-sm">
-          Join our community and start your journey
-        </p>
-      </DialogHeader>
-
+  const formContent = (
+    <>
       <div className="grid gap-4 py-4">
         <div className="grid gap-2">
           <Label htmlFor="fullname" className="text-zinc-300">Full Name</Label>
@@ -169,6 +166,40 @@ export function Signup({ setIsSignupOpen, setIsLoginOpen }) {
           </span>
         </div>
       </div>
-    </DialogContent>
+    </>
+  );
+
+  if (setIsSignupOpen) {
+    return (
+      <Dialog open={setIsSignupOpen} onOpenChange={setIsSignupOpen}>
+        <DialogContent className="sm:max-w-[425px] bg-zinc-900 border border-zinc-800">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-emerald-400 to-teal-500 bg-clip-text text-transparent">
+              Create Account
+            </DialogTitle>
+            <p className="text-zinc-400 text-sm">
+              Join our community and start your journey
+            </p>
+          </DialogHeader>
+          {formContent}
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-zinc-950 p-4">
+      <div className="w-full max-w-[425px] bg-zinc-900 border border-zinc-800 rounded-lg p-6">
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold bg-gradient-to-r from-emerald-400 to-teal-500 bg-clip-text text-transparent">
+            Create Account
+          </h2>
+          <p className="text-zinc-400 text-sm mt-1">
+            Join our community and start your journey
+          </p>
+        </div>
+        {formContent}
+      </div>
+    </div>
   );
 }

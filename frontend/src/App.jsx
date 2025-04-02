@@ -14,6 +14,9 @@ import EditProfile from './components/profilePages/EditProfile'
 import { UserHome } from './components/pages/UserHome'
 import AskQuestion from './components/pages/AskQuestion'
 import Answer from './components/facultyPages/Answer'
+import FacultyAllQuestion from './components/facultyPages/FacultyAllQuestion'
+import FacultyUnsolvedQuestion from './components/facultyPages/FacultyUnsolvedQuestion'
+import FacultySolvedQuestion from './components/facultyPages/FacultySolvedQuestion'
 
 const appRouter = createBrowserRouter([
   { path: "/", element: <Home /> },
@@ -27,6 +30,11 @@ const appRouter = createBrowserRouter([
   { path: "/profile", element: <Profile /> },
   { path: "/edit/profile", element: <EditProfile /> },
   { path: "/answer/:id", element: <Answer /> },
+
+  // faculty routes
+  { path:"/faculty/allquestions", element:<FacultyAllQuestion/>},
+  { path:"/faculty/unsolved/questions", element:<FacultyUnsolvedQuestion/>},
+  { path:"/faculty/solved/questions", element:<FacultySolvedQuestion/>},
 ])
 
 export function App() {

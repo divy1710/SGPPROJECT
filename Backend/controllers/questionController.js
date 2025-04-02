@@ -1,6 +1,6 @@
 // import Question from "../models/question.js"
-import { Question } from "../models/question.js"; 
-import {User} from "../models/user.js";
+import { Question } from "../models/question.js";
+import { User } from "../models/user.js";
 
 
 export const askQuestion = async (req, res) => {
@@ -153,18 +153,23 @@ export const getQuestionById = async (req, res) => {
 
 export const getQuestionsByStudent = async (req, res) => {
     try {
-        const { studentId } = req.params;
+        const { userId } = req.params; // ✅ Extract userId from params
+        // console.log("Received userId:", userId);
 
-        // ✅ Fetch questions & correctly populate faculty details
-        const questions = await Question.find({ studentId })
-            .populate("facultyId", "fullname") // ✅ Use the correct field name
-            .lean(); // ✅ Optimize for read-only data
-
-        if (!questions.length) {
-            return res.status(404).json({ message: "No questions found for this student" });
+        if (!userId) {
+            return res.status(400).json({ message: "User ID is required", success: false });
         }
 
-        res.status(200).json(questions);
+        // ✅ Fetch questions where studentId matches userId & populate faculty details
+        const questions = await Question.find({ studentId: userId })
+            .populate("facultyId", "fullname")
+            .lean();
+
+        if (!questions.length) {
+            return res.status(404).json({ message: "No questions found for this student", success: false });
+        }
+
+        res.status(200).json({ questions, success: true });
     } catch (error) {
         console.error("Error fetching questions:", error);
         res.status(500).json({ message: "Server Error", error: error.message });
@@ -174,17 +179,28 @@ export const getQuestionsByStudent = async (req, res) => {
 
 
 
+
 export const getQuestionsByFaculty = async (req, res) => {
     try {
         const { facultyId } = req.params;
-        const questions = await Question.find({ facultyId });
 
-        if (questions.length === 0) {
-            return res.status(404).json({ message: "No questions assigned to this faculty" });
+        if (!facultyId) {
+            return res.status(400).json({ message: "Faculty ID is required", success: false });
         }
 
-        res.status(200).json(questions);
+        const questions = await Question.find({ facultyId })
+            .populate("studentId") // ✅ Populate all student details
+            .lean();
+
+        if (!questions.length) {
+            return res.status(404).json({ message: "No questions assigned to this faculty", success: false });
+        }
+
+        res.status(200).json({ questions, success: true });
     } catch (error) {
+        console.error("Error fetching faculty questions:", error);
         res.status(500).json({ message: "Server Error", error: error.message });
     }
 };
+
+
