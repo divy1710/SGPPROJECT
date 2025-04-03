@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React from "react";
 import { Navbar } from "./Navbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,16 +18,19 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { FacultyHome } from "./FacultyHome";
+import { useGetFacultyQuestions } from "@/hooks/useGetFacultyQuestions";
 
 export function UserHome() {
     useGetAllQuestions();
     const navigate = useNavigate();
     const questions = useSelector((state) => state.auth.questions) || [];
     const user = useSelector((state) => state.auth.user);
-    if (user?.role === "faculty") {
-        return <FacultyHome />
-        
+
+    if(user?.role === "Faculty" ){
+        navigate("/faculty/homepage");
+        return 
     }
+
     // Calculate statistics
     const totalQuestions = questions.length;
     const answeredQuestions = questions.filter(q => q.status === "Answered").length;

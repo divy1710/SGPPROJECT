@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -5,6 +6,7 @@ import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { useGetFacultyQuestions } from "@/hooks/useGetFacultyQuestions";
 import { MessageSquare, CheckCircle2, Clock } from "lucide-react";
+import { Navbar } from "./Navbar";
 
 const cardVariants = {
     hidden: { opacity: 0, y: 20 },
@@ -12,10 +14,12 @@ const cardVariants = {
 };
 
 export function FacultyHome() {
+
+    useGetFacultyQuestions();
+
     const navigate = useNavigate();
     const { user } = useSelector((state) => state.auth);
-    useGetFacultyQuestions();
-    const { questions } = useSelector((state) => state.questions);
+    const questions  = useSelector((state) => state.questions);
 
     useEffect(() => {
         if (!user) {
@@ -32,6 +36,7 @@ export function FacultyHome() {
 
     return (
         <div className="container mx-auto px-4 py-8">
+            <Navbar/>
             {/* Welcome Section */}
             <motion.div
                 initial={{ opacity: 0, y: -20 }}

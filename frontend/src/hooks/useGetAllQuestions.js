@@ -18,7 +18,7 @@ export function useGetAllQuestions() {
           { withCredentials: true } // ✅ Include credentials for authentication
         );
 
-        // console.log("Fetched questions:", data.questions);
+        console.log("Fetched questions:", data.questions);
 
         dispatch(setQuestions(data.success ? data.questions : []));
 

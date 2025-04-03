@@ -17,6 +17,7 @@ import Answer from './components/facultyPages/Answer'
 import FacultyAllQuestion from './components/facultyPages/FacultyAllQuestion'
 import FacultyUnsolvedQuestion from './components/facultyPages/FacultyUnsolvedQuestion'
 import FacultySolvedQuestion from './components/facultyPages/FacultySolvedQuestion'
+import { FacultyHome } from './components/pages/FacultyHome'
 
 const appRouter = createBrowserRouter([
   { path: "/", element: <Home /> },
@@ -32,6 +33,7 @@ const appRouter = createBrowserRouter([
   { path: "/answer/:id", element: <Answer /> },
 
   // faculty routes
+  { path: "/faculty/homepage", element: <FacultyHome /> },
   { path: "/faculty/allquestions", element: <FacultyAllQuestion /> },
   { path: "/faculty/unsolved/questions", element: <FacultyUnsolvedQuestion /> },
   { path: "/faculty/solved/questions", element: <FacultySolvedQuestion /> },

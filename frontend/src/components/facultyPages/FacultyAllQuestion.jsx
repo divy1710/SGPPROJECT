@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useGetFacultyQuestions } from "@/hooks/useGetFacultyQuestions";
 import React from "react";
 import { useSelector } from "react-redux";

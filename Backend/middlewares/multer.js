@@ -2,11 +2,16 @@ import multer from "multer";
 
 const storage = multer.memoryStorage();
 
-export const singleUpload = multer({
-  storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
-  fileFilter: (req, file, cb) => {
-    if (file.mimetype.startsWith("image/")) cb(null, true);
-    else cb(new Error("Only image files are allowed!"), false);
-  },
-}).single("profilePicture"); // Must match frontend input name
+export const singleUpload = (fieldName) =>
+  multer({
+    storage,
+    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+    fileFilter: (req, file, cb) => {
+      const allowedTypes = ["image/", "application/pdf", "text/"];
+      if (allowedTypes.some((type) => file.mimetype.startsWith(type))) {
+        cb(null, true);
+      } else {
+        cb(new Error("Only image, PDF, and text files are allowed!"), false);
+      }
+    },
+  }).single(fieldName);

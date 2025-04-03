@@ -2,8 +2,8 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { User } from "../models/user.js";
 import dotenv from "dotenv"
-import getDataUri from "../utils/datauri.js";
 import cloudinary from "../utils/cloudinary.js";
+import getDataUri from "../utils/dataUri.js";
 
 dotenv.config({})
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -145,7 +145,7 @@ export const updateProfile = async (req, res) => {
 
     // Handle Profile Picture Upload
     if (file) {
-      // Convert file buffer to data URI
+      // Convert file buffer to data URIj
       const fileUri = getDataUri(file);
 
       // Upload new profile picture to Cloudinary

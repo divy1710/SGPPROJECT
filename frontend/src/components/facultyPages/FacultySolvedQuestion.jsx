@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React from "react";
 import { useSelector } from "react-redux";
 import { useGetFacultyQuestions } from "@/hooks/useGetFacultyQuestions";
@@ -9,7 +10,7 @@ import { CheckCircle2, MessageCircle } from "lucide-react";
 export default function FacultySolvedQuestion() {
   useGetFacultyQuestions(); // Fetch questions
   const questions = useSelector((state) => state.auth.questions);
-
+console.log(questions);
   // Filter only answered questions
   const solvedQuestions = questions.filter((q) => q.status === "Answered");
 

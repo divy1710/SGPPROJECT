@@ -8,11 +8,13 @@ export function useGetFacultyQuestions() {
   const { user } = useSelector((state) => state.auth);
   const facultyId = user?._id; // Assuming the logged-in user is a faculty
 
+  // console.log(facultyId);
   useEffect(() => {
+    // const facultyId = user._id;
     
-    const facultyId = user._id;
+    
 
-    const fetchQuestions = async () => {
+    const fetchQuestions = async ()  => {
       try {
         const { data } = await axios.get(
           `http://localhost:8000/api/v1/question/faculty/${facultyId}`,

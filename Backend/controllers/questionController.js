@@ -1,12 +1,12 @@
 // import Question from "../models/question.js"
 import { Question } from "../models/question.js";
 import { User } from "../models/user.js";
+import { v2 as cloudinary } from "cloudinary";
+import getDataUri from "../utils/dataUri.js"; // Utility to convert file buffer to data URI
 
 
 export const askQuestion = async (req, res) => {
     try {
-        // console.log("Received Data:", req.body); // Debugging line
-
         const { studentId, facultyId, subject, questionTitle, questionText } = req.body;
 
         if (!studentId || !facultyId || !subject || !questionTitle || !questionText) {
@@ -27,9 +27,18 @@ export const askQuestion = async (req, res) => {
 
         let questionFile = null;
         if (req.file) {
+            // Convert file buffer to Data URI
+            const fileUri = getDataUri(req.file);
+
+            // Upload file to Cloudinary
+            const uploadResult = await cloudinary.uploader.upload(fileUri.content, {
+                folder: "question_files",
+                resource_type: "auto", // ✅ Allow any file type
+            });
+
             questionFile = {
-                public_id: req.file.filename,
-                url: `/uploads/${req.file.filename}`
+                public_id: uploadResult.public_id,
+                url: uploadResult.secure_url,
             };
         }
 
@@ -39,7 +48,7 @@ export const askQuestion = async (req, res) => {
             subject,
             questionTitle,
             questionText,
-            questionFile
+            questionFile,
         });
 
         await newQuestion.save();
@@ -52,17 +61,19 @@ export const askQuestion = async (req, res) => {
 
         res.status(201).json({
             message: "✅ Question submitted successfully",
-            question: newQuestion
+            question: newQuestion,
         });
-
     } catch (error) {
         console.error("❌ Server Error:", error);
         res.status(500).json({
             message: "❌ Server Error",
-            error: error.message
+            error: error.message,
         });
     }
 };
+
+
+
 
 
 

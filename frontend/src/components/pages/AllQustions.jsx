@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState } from "react";
 import { Navbar } from "./Navbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

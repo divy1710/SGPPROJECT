@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useNavigate } from "react-router-dom";
@@ -17,6 +18,9 @@ export function Navbar() {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
   const isAuthenticated = !!user;
+
+  // console.log(user?.role);
+  
 
   // Logout Function
   const handleLogout = async () => {
@@ -54,8 +58,9 @@ export function Navbar() {
         <div className="hidden md:flex items-center space-x-6">
           {isAuthenticated && (
             <>
+            
               <Link
-                to="/homepage"
+                to={user?.role === "Student" ? "/homepage" : "/faculty/homepage"}
                 className="text-gray-300 hover:text-white transition duration-200"
               >
                 Home
@@ -122,7 +127,7 @@ export function Navbar() {
                 >
                   <Avatar className="h-8 w-8 border-2 border-emerald-500/20">
                     <AvatarImage
-                      src={user?.avatar || "https://github.com/shadcn.png"}
+                      src={user?.profile?.profilePicture?.url || "https://github.com/shadcn.png"}
                       alt={user?.name}
                     />
                     <AvatarFallback className="bg-emerald-500/10 text-emerald-500">
