@@ -18,7 +18,7 @@ export function FacultyHome() {
 
     const navigate = useNavigate();
     const { user } = useSelector((state) => state.auth);
-    const questions = useSelector((state) => state.questions);
+    const questions = useSelector((state) => state.auth.questions);
 
     useEffect(() => {
         if (!user) {
