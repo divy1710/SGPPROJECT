@@ -23,8 +23,8 @@ export default function FacultyAllQuestion() {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: { staggerChildren: 0.1 }
-    }
+      transition: { staggerChildren: 0.1 },
+    },
   };
 
   const itemVariants = {
@@ -32,8 +32,8 @@ export default function FacultyAllQuestion() {
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.5 }
-    }
+      transition: { duration: 0.5 },
+    },
   };
 
   return (
@@ -107,6 +107,13 @@ export default function FacultyAllQuestion() {
                       {/* Question Title */}
                       <div className="pl-10">
                         <p className="text-lg text-zinc-300">{question.questionTitle}</p>
+                      </div>
+
+                      {/* ✅ Question Text Section */}
+                      <div className="bg-zinc-800/50 p-6 rounded-xl border border-zinc-700/50">
+                        <p className="text-zinc-300 leading-relaxed">
+                          {question?.questionText || "No question text provided."}
+                        </p>
                       </div>
 
                       {/* Student Info */}

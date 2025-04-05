@@ -10,7 +10,7 @@ import { CheckCircle2, MessageCircle } from "lucide-react";
 export default function FacultySolvedQuestion() {
   useGetFacultyQuestions(); // Fetch questions
   const questions = useSelector((state) => state.auth.questions);
-console.log(questions);
+
   // Filter only answered questions
   const solvedQuestions = questions.filter((q) => q.status === "Answered");
 
@@ -19,8 +19,8 @@ console.log(questions);
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: { staggerChildren: 0.1 }
-    }
+      transition: { staggerChildren: 0.1 },
+    },
   };
 
   const itemVariants = {
@@ -28,8 +28,8 @@ console.log(questions);
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.5 }
-    }
+      transition: { duration: 0.5 },
+    },
   };
 
   return (
@@ -101,6 +101,13 @@ console.log(questions);
                       {/* Question Title */}
                       <div className="pl-10">
                         <p className="text-lg text-zinc-300">{question.questionTitle}</p>
+                      </div>
+
+                      {/* ✅ Added Question Text Section */}
+                      <div className="bg-zinc-800/50 p-6 rounded-xl border border-zinc-700/50">
+                        <p className="text-zinc-300 leading-relaxed">
+                          {question?.questionText || "No question text provided."}
+                        </p>
                       </div>
 
                       {/* Answer */}

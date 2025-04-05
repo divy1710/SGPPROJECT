@@ -32,13 +32,20 @@ export default function FacultyUnsolvedQuestion() {
   // Handle answer submission
   const handleAnswerSubmit = async (id) => {
     try {
-      await axios.post(`http://localhost:8000/api/v1/question/answer/${id}`, {
-        answerText: answers[id],
-      }, { withCredentials: true });
+      await axios.post(
+        `http://localhost:8000/api/v1/question/answer/${id}`,
+        {
+          answerText: answers[id],
+        },
+        { withCredentials: true }
+      );
 
       navigate("/faculty/solved/questions");
     } catch (error) {
-      console.error("Error submitting answer:", error.response?.data?.message || error.message);
+      console.error(
+        "Error submitting answer:",
+        error.response?.data?.message || error.message
+      );
     }
   };
 
@@ -61,19 +68,32 @@ export default function FacultyUnsolvedQuestion() {
         ) : (
           <motion.div className="grid gap-6">
             {unsolvedQuestions.map((question) => (
-              <Card key={question._id} className="bg-zinc-800/30 border-zinc-700/50 backdrop-blur-sm">
+              <Card
+                key={question._id}
+                className="bg-zinc-800/30 border-zinc-700/50 backdrop-blur-sm"
+              >
                 <CardContent className="p-6">
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <h3 className="text-xl font-semibold text-zinc-100 flex items-center gap-2">
-                        <MessageCircle className="h-5 w-5 text-emerald-400" /> {question.subject}
+                        <MessageCircle className="h-5 w-5 text-emerald-400" />{" "}
+                        {question.subject}
                       </h3>
                       <span className="text-rose-400 font-medium flex items-center gap-2">
                         <Clock className="h-5 w-5" /> Pending
                       </span>
                     </div>
 
-                    <p className="text-lg text-zinc-300 pl-10">{question.questionTitle}</p>
+                    <p className="text-lg text-zinc-300 pl-10">
+                      {question.questionTitle}
+                    </p>
+
+                    {/* ✅ Added questionText section here */}
+                    <div className="bg-zinc-800/50 p-6 rounded-xl border border-zinc-700/50">
+                      <p className="text-zinc-300 leading-relaxed">
+                        {question?.questionText || "No question text provided."}
+                      </p>
+                    </div>
 
                     {question?.questionFile?.url && (
                       <div className="pl-10">
@@ -84,7 +104,9 @@ export default function FacultyUnsolvedQuestion() {
                         />
                         <Button
                           className="mt-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md"
-                          onClick={() => setSelectedImage(question.questionFile.url)}
+                          onClick={() =>
+                            setSelectedImage(question.questionFile.url)
+                          }
                         >
                           See Image
                         </Button>
@@ -95,7 +117,9 @@ export default function FacultyUnsolvedQuestion() {
                       className="w-full px-4 py-2 bg-zinc-800/50 border border-zinc-700 rounded-md text-zinc-100 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                       placeholder="Enter your answer here..."
                       value={answers[question._id] || ""}
-                      onChange={(e) => handleInputChange(question._id, e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange(question._id, e.target.value)
+                      }
                       rows="4"
                     ></textarea>
 
@@ -123,7 +147,11 @@ export default function FacultyUnsolvedQuestion() {
             >
               <X className="w-5 h-5" />
             </button>
-            <img src={selectedImage} alt="Full Size" className="w-full max-h-[80vh] object-contain rounded-lg" />
+            <img
+              src={selectedImage}
+              alt="Full Size"
+              className="w-full max-h-[80vh] object-contain rounded-lg"
+            />
           </div>
         </div>
       )}
