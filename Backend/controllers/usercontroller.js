@@ -206,8 +206,8 @@ export const getFacultyBySubject = async (req, res) => {
     }
 
     // Fetch all faculty members who teach the selected subject
-    const faculty = await User.find({ 
-      role: "Faculty", 
+    const faculty = await User.find({
+      role: "Faculty",
       subject: { $in: [subject] } // Find faculty who teach the selected subject
     });
 
@@ -221,11 +221,29 @@ export const getFacultyBySubject = async (req, res) => {
     res.status(500).json({ message: "Error fetching faculty", error });
   }
 };
-
-
-export const getAllSub = async (req,res) => {
+export const getAllFaculty = async (req, res) => {
   try {
-    
+    // Fetch all users with the role 'Faculty'
+    const faculty = await User.find({ role: "Faculty" });
+
+    // If no faculty found
+    if (faculty.length === 0) {
+      return res.status(404).json({ message: "No faculty found" });
+    }
+
+    // Return the list of faculty
+    res.status(200).json(faculty);
+  } catch (error) {
+    console.error("Error fetching faculty:", error);
+    res.status(500).json({ message: "Error fetching faculty", error });
+  }
+};
+
+
+
+export const getAllSub = async (req, res) => {
+  try {
+
     const allSub = [
       "Statistical and Numerical Techniques",
       "Computer Architecture and Microprocessor Interfacing",
@@ -238,10 +256,37 @@ export const getAllSub = async (req,res) => {
       "Machine Learning",
       "Contributory Personality Development"
     ]
-res.json({allSub, success:true});
+    res.json({ allSub, success: true });
 
   } catch (error) {
     console.log(error);
-    
+
   }
 }
+
+// Delete Faculty
+export const deleteFaculty = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Check if requester is admin
+    if (req.user.role !== "Admin") {
+      return res.status(403).json({ message: "Only admins can delete faculty!" });
+    }
+
+    const faculty = await User.findById(id);
+    if (!faculty) {
+      return res.status(404).json({ message: "Faculty member not found" });
+    }
+
+    if (faculty.role !== "Faculty") {
+      return res.status(400).json({ message: "Can only delete faculty members" });
+    }
+
+    await User.findByIdAndDelete(id);
+    res.status(200).json({ message: "Faculty deleted successfully" });
+  } catch (error) {
+    console.error('Error deleting faculty:', error);
+    res.status(500).json({ message: "Error deleting faculty", error: error.message });
+  }
+};

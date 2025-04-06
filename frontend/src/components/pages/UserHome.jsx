@@ -30,6 +30,10 @@ export function UserHome() {
         navigate("/faculty/homepage");
         return 
     }
+    if(user?.role === "Admin" ){
+        navigate("/admin/homepage");
+        return 
+    }
 
     // Calculate statistics
     const totalQuestions = questions.length;

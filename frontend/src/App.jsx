@@ -18,6 +18,7 @@ import FacultyAllQuestion from './components/facultyPages/FacultyAllQuestion'
 import FacultyUnsolvedQuestion from './components/facultyPages/FacultyUnsolvedQuestion'
 import FacultySolvedQuestion from './components/facultyPages/FacultySolvedQuestion'
 import { FacultyHome } from './components/pages/FacultyHome'
+import AdminHome from './components/Admin/adminhome'
 
 const appRouter = createBrowserRouter([
   { path: "/", element: <Home /> },
@@ -37,6 +38,9 @@ const appRouter = createBrowserRouter([
   { path: "/faculty/allquestions", element: <FacultyAllQuestion /> },
   { path: "/faculty/unsolved/questions", element: <FacultyUnsolvedQuestion /> },
   { path: "/faculty/solved/questions", element: <FacultySolvedQuestion /> },
+
+  // admin routes
+  { path: "/admin/homepage", element: <AdminHome /> },
 ])
 
 export function App() {
