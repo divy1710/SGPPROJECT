@@ -30,6 +30,7 @@ export function Login({ isDialog = false, setIsLoginOpen, setIsSignupOpen }) {
       toast("login is successfull");
     } catch (error) {
       console.error("Login failed", error.response?.data?.message || error.message);
+      toast("login failed");
     } finally {
       dispatch(setLoading(false));
     }
