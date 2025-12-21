@@ -57,7 +57,7 @@ export default function EditProfile() {
         formDataToSend.append("profilePicture", profilePicture);
       }
 
-      const { data } = await axios.put(
+      const { data } = await axios.post(
         `http://localhost:8000/api/v1/user/profile/${user?._id}`,
         formDataToSend,
         {

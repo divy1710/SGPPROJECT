@@ -136,6 +136,9 @@ export const logoutUser = async (req, res) => {
 export const updateProfile = async (req, res) => {
   try {
     const { fullname, phoneNumber, semester, department } = req.body;
+
+
+
     const userId = req.params.id; // Get user ID from URL
     const file = req.file; // Fix: Use req.file (not req.files)
 

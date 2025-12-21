@@ -22,7 +22,7 @@ router.route("/login").post(loginUser);
 router.route("/logout").get(logoutUser);
 
 // Get User Profile
-router.route("/profile/:id").put(authMiddleware, singleUpload, updateProfile);
+router.route("/profile/:id").post(authMiddleware, singleUpload("profilePicture"), updateProfile);
 
 
 router.route("/faculty").get(getFacultyBySubject);
